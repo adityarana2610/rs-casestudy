@@ -43,5 +43,5 @@ Rather than relying on black-box similarity wrappers, the core mathematical comp
 ## 5. How to Run
 ```bash
 pip install -r requirements.txt
-jupyter notebook Part_C_Implementation.ipynb
+jupyter notebook RS_Casestudy.ipynb
 ```
