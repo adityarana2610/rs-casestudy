@@ -390,6 +390,45 @@ body.theme-dark .icon-theme-moon {
   margin-bottom: 1.25rem;
 }
 
+.card-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.mode-switcher-pills {
+  display: flex;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  gap: 2px;
+}
+
+.mode-pill {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.mode-pill:hover {
+  color: var(--text-primary);
+}
+
+.mode-pill.active {
+  background: var(--bg-surface);
+  color: var(--accent);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
 .section-tag {
   font-size: 0.6875rem;
   font-weight: 600;
@@ -537,15 +576,25 @@ body.theme-dark .icon-theme-moon {
   color: var(--text-secondary);
 }
 
-/* Search Catalog */
-.search-catalog-box {
-  position: relative;
+/* Custom Query Section */
+.custom-query-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
-.search-input-wrap {
+.custom-input-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.custom-search-wrap {
   position: relative;
   display: flex;
   align-items: center;
+  flex: 1;
 }
 
 .search-icon {
@@ -557,9 +606,9 @@ body.theme-dark .icon-theme-moon {
   pointer-events: none;
 }
 
-.search-input-wrap input {
+.custom-search-wrap input {
   width: 100%;
-  padding: 0.6rem 0.75rem 0.6rem 2.25rem;
+  padding: 0.65rem 2.25rem 0.65rem 2.25rem;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
@@ -569,57 +618,106 @@ body.theme-dark .icon-theme-moon {
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.search-input-wrap input:focus {
+.custom-search-wrap input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px var(--accent-soft);
 }
 
-.search-suggestions {
-  display: none;
+.clear-btn {
   position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-  max-height: 220px;
-  overflow-y: auto;
-  z-index: 30;
-}
-
-.search-suggestions.show {
-  display: block;
-}
-
-.suggestion-item {
-  padding: 0.6rem 0.85rem;
-  border-bottom: 1px solid var(--border-subtle);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  transition: background var(--transition-fast);
-}
-
-.suggestion-item:last-child {
-  border-bottom: none;
-}
-
-.suggestion-item:hover {
+  right: 0.6rem;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
   background: var(--bg-subtle);
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 3px;
+  transition: all var(--transition-fast);
 }
 
-.sugg-name {
-  font-size: 0.8125rem;
-  font-weight: 500;
+.clear-btn:hover {
+  background: var(--bg-hover);
   color: var(--text-primary);
 }
 
-.sugg-sub {
+.clear-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1rem;
+  background: var(--accent);
+  color: #ffffff;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+.btn-primary svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Quick Sample Chips */
+.quick-samples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.quick-label {
   font-size: 0.6875rem;
   color: var(--text-muted);
+  font-weight: 500;
+  margin-right: 0.2rem;
+}
+
+.sample-chip {
+  padding: 0.25rem 0.6rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sample-chip:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.sample-chip:active {
+  transform: scale(0.96);
+}
+
+.hidden {
+  display: none !important;
 }
 
 /* Form Groups & Segmented Controls */

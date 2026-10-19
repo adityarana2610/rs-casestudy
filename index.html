@@ -117,29 +117,76 @@
             <!-- Seed Query Card -->
             <div class="panel-card query-card">
               <div class="card-header">
-                <span class="section-tag">INPUT QUERY</span>
-                <h3 class="card-title">Seed Product Selection</h3>
+                <div class="card-header-flex">
+                  <div>
+                    <span class="section-tag">INPUT QUERY</span>
+                    <h3 class="card-title">Seed & Search Selection</h3>
+                  </div>
+                  <!-- Mode Switcher -->
+                  <div class="mode-switcher-pills">
+                    <button type="button" id="modePresetBtn" class="mode-pill active">Benchmark Seeds</button>
+                    <button type="button" id="modeCustomBtn" class="mode-pill">Custom Search</button>
+                  </div>
+                </div>
               </div>
 
-              <div class="seed-selector-group">
-                <label class="field-label">Benchmark Test Seeds (Case Studies)</label>
+              <!-- Mode 1: Benchmark Test Seeds (Case Studies) -->
+              <div id="presetModeContainer" class="seed-selector-group">
+                <label class="field-label">Case Study Benchmark Presets</label>
                 <div class="preset-chips">
-                  <button class="preset-btn active" data-seed="puzzle">
+                  <button type="button" class="preset-btn active" data-seed="puzzle">
                     <span class="chip-dot"></span>
                     Test 1: Woodstock Puzzle
                   </button>
-                  <button class="preset-btn" data-seed="longboard">
+                  <button type="button" class="preset-btn" data-seed="longboard">
                     <span class="chip-dot"></span>
                     Test 2: CoreFlex Longboard
                   </button>
-                  <button class="preset-btn" data-seed="costume">
+                  <button type="button" class="preset-btn" data-seed="costume">
                     <span class="chip-dot"></span>
                     Test 3: Monster High Costume
                   </button>
-                  <button class="preset-btn" data-seed="headphone">
+                  <button type="button" class="preset-btn" data-seed="headphone">
                     <span class="chip-dot"></span>
                     Test 4: Studio Headphones
                   </button>
+                </div>
+              </div>
+
+              <!-- Mode 2: Custom Search Input -->
+              <div id="customModeContainer" class="custom-query-section hidden">
+                <label class="field-label" for="customProductInput">Enter Any Custom Product Query or Description</label>
+                <div class="custom-input-group">
+                  <div class="custom-search-wrap">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="customProductInput" placeholder="Type anything, e.g. Mechanical gaming keyboard RGB..." autocomplete="off">
+                    <button type="button" id="clearCustomQuery" class="clear-btn hidden" title="Clear input">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  </div>
+                  <button type="button" id="runCustomSearchBtn" class="btn-primary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                    <span>Search</span>
+                  </button>
+                </div>
+
+                <!-- Example Chips for Custom Search -->
+                <div class="quick-samples">
+                  <span class="quick-label">Try ideas:</span>
+                  <button type="button" class="sample-chip" data-sample="Mechanical gaming keyboard with tactile switches and RGB">RGB Keyboard</button>
+                  <button type="button" class="sample-chip" data-sample="Stainless steel insulated vacuum flask water bottle 32oz">Water Bottle</button>
+                  <button type="button" class="sample-chip" data-sample="Ceremonial Japanese organic matcha green tea powder">Matcha Tea</button>
+                  <button type="button" class="sample-chip" data-sample="Thick non slip exercise yoga mat with carrying strap">Yoga Mat</button>
+                  <button type="button" class="sample-chip" data-sample="Lego Star Wars Millennium Falcon building starship kit">Star Wars Lego</button>
+                  <button type="button" class="sample-chip" data-sample="Wireless active noise cancelling bluetooth earbuds">ANC Earbuds</button>
                 </div>
               </div>
 
@@ -151,7 +198,7 @@
                 </div>
                 <h4 class="seed-product-name" id="seedName">Woodstock- Collage 500 pc Puzzle</h4>
                 <div class="token-flow">
-                  <span class="token-label">Cleaned Tokens:</span>
+                  <span class="token-label">Cleaned Tokens (lowercase + punctuation + stopwords removed):</span>
                   <div class="tokens-list" id="seedTokens">
                     <span class="token">woodstock</span>
                     <span class="token">collage</span>
@@ -160,19 +207,6 @@
                     <span class="token">puzzle</span>
                   </div>
                 </div>
-              </div>
-
-              <!-- Custom Search Input -->
-              <div class="search-catalog-box">
-                <label class="field-label" for="catalogSearch">Filter or Search 10,001 Catalog Items</label>
-                <div class="search-input-wrap">
-                  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  </svg>
-                  <input type="text" id="catalogSearch" placeholder="Type keyword (e.g. skateboard, lego, dress)..." autocomplete="off">
-                </div>
-                <div class="search-suggestions" id="searchSuggestions"></div>
               </div>
             </div>
 
