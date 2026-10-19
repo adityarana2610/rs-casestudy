@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content-Based Product Recommendation: Vectorizers × Text Similarity Metrics</title>
+  <meta name="description" content="Interactive demo UI for IEEE Access 2026 Reproduction: Text Similarity Metrics and Vectorization Techniques for Content-Based Product Recommendation on 10,001 Amazon Products.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body class="theme-light">
+  <div class="app-layout">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="brand-group">
+          <div class="brand-badge">
+            <svg class="icon-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+            <span>RECSYS LAB</span>
+          </div>
+          <div class="title-wrap">
+            <h1 class="main-title">Text Similarity & Vectorization Explorer</h1>
+            <p class="subtitle">Reproduction of Oprea et al. (IEEE Access, 2026) · Amazon Product Catalog (10,001 items, 108 categories)</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <div class="stat-pill">
+            <span class="stat-label">Baseline P@10</span>
+            <span class="stat-val font-mono">0.514</span>
+          </div>
+          <div class="stat-pill highlight">
+            <span class="stat-label">W2V + Cosine</span>
+            <span class="stat-val font-mono">0.538</span>
+          </div>
+          <div class="stat-pill accent">
+            <span class="stat-label">Title + About Fusion</span>
+            <span class="stat-val font-mono">0.586 (+4.8%)</span>
+          </div>
+          <button id="themeToggle" class="btn-icon" aria-label="Toggle theme">
+            <svg class="icon-theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="icon-theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs-bar">
+      <div class="nav-tabs-inner">
+        <button class="nav-tab active" data-tab="interactive">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Interactive Recommendation Lab
+        </button>
+        <button class="nav-tab" data-tab="table7">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="3" y1="9" x2="21" y2="9"></line>
+            <line x1="3" y1="15" x2="21" y2="15"></line>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+            <line x1="15" y1="3" x2="15" y2="21"></line>
+          </svg>
+          Table 7: 12-Config Matrix
+        </button>
+        <button class="nav-tab" data-tab="table11">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          Table 11: 500-Seed Evaluation & CIs
+        </button>
+        <button class="nav-tab" data-tab="ablation">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          Ablation & Fusion Improvement
+        </button>
+        <button class="nav-tab" data-tab="algorithms">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+          NumPy Scratch Architecture
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-container">
+
+      <!-- ================= SECTION 1: INTERACTIVE LAB ================= -->
+      <section id="pane-interactive" class="tab-pane active">
+        <div class="split-workspace">
+          <!-- Control Column (Left) -->
+          <div class="controls-column">
+            
+            <!-- Seed Query Card -->
+            <div class="panel-card query-card">
+              <div class="card-header">
+                <span class="section-tag">INPUT QUERY</span>
+                <h3 class="card-title">Seed Product Selection</h3>
+              </div>
+
+              <div class="seed-selector-group">
+                <label class="field-label">Benchmark Test Seeds (Case Studies)</label>
+                <div class="preset-chips">
+                  <button class="preset-btn active" data-seed="puzzle">
+                    <span class="chip-dot"></span>
+                    Test 1: Woodstock Puzzle
+                  </button>
+                  <button class="preset-btn" data-seed="longboard">
+                    <span class="chip-dot"></span>
+                    Test 2: CoreFlex Longboard
+                  </button>
+                  <button class="preset-btn" data-seed="costume">
+                    <span class="chip-dot"></span>
+                    Test 3: Monster High Costume
+                  </button>
+                  <button class="preset-btn" data-seed="headphone">
+                    <span class="chip-dot"></span>
+                    Test 4: Studio Headphones
+                  </button>
+                </div>
+              </div>
+
+              <!-- Active Seed Details -->
+              <div class="seed-preview-box">
+                <div class="seed-meta-row">
+                  <span class="subcat-tag" id="seedSubcat">Toys & Games | Puzzles</span>
+                  <span class="row-tag font-mono" id="seedRowId">Row #4</span>
+                </div>
+                <h4 class="seed-product-name" id="seedName">Woodstock- Collage 500 pc Puzzle</h4>
+                <div class="token-flow">
+                  <span class="token-label">Cleaned Tokens:</span>
+                  <div class="tokens-list" id="seedTokens">
+                    <span class="token">woodstock</span>
+                    <span class="token">collage</span>
+                    <span class="token">500</span>
+                    <span class="token">pc</span>
+                    <span class="token">puzzle</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Custom Search Input -->
+              <div class="search-catalog-box">
+                <label class="field-label" for="catalogSearch">Filter or Search 10,001 Catalog Items</label>
+                <div class="search-input-wrap">
+                  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" id="catalogSearch" placeholder="Type keyword (e.g. skateboard, lego, dress)..." autocomplete="off">
+                </div>
+                <div class="search-suggestions" id="searchSuggestions"></div>
+              </div>
+            </div>
+
+            <!-- Vectorizer & Similarity Model Card -->
+            <div class="panel-card model-card">
+              <div class="card-header">
+                <span class="section-tag">CONFIGURATION</span>
+                <h3 class="card-title">Embedding & Similarity Metric</h3>
+              </div>
+
+              <!-- Vectorizer Selector -->
+              <div class="form-group">
+                <div class="group-header">
+                  <label class="field-label">1. Text Vectorizer</label>
+                  <span class="dim-badge font-mono" id="vectorDimBadge">300 dims · Dense</span>
+                </div>
+                <div class="segmented-control vertical" id="vectorizerSelector">
+                  <button class="segment-btn active" data-vec="w2v">
+                    <div class="segment-main">
+                      <span class="seg-title">Word2Vec (300d)</span>
+                      <span class="seg-sub">Skip-Gram (sg=1, epochs=25, window=5) · Sum-Pooled</span>
+                    </div>
+                    <span class="perf-rank">P@10 0.538</span>
+                  </button>
+                  <button class="segment-btn" data-vec="fused">
+                    <div class="segment-main">
+                      <span class="seg-title">Fused (Title + About Product)</span>
+                      <span class="seg-sub">Word2Vec 300d on combined text · Proposed Improvement</span>
+                    </div>
+                    <span class="perf-rank best">P@10 0.586</span>
+                  </button>
+                  <button class="segment-btn" data-vec="tfidf">
+                    <div class="segment-main">
+                      <span class="seg-title">TF-IDF (Scratch, 1500 vocab)</span>
+                      <span class="seg-sub">Eq. 6-8: TF = count/len, IDF = log(N/df), L2-norm</span>
+                    </div>
+                    <span class="perf-rank">P@10 0.490</span>
+                  </button>
+                  <button class="segment-btn" data-vec="count">
+                    <div class="segment-main">
+                      <span class="seg-title">Count Vectorizer (1500 vocab)</span>
+                      <span class="seg-sub">Sklearn baseline · Bag-of-words token frequencies</span>
+                    </div>
+                    <span class="perf-rank baseline">P@10 0.514</span>
+                  </button>
+                  <button class="segment-btn" data-vec="glove">
+                    <div class="segment-main">
+                      <span class="seg-title">GloVe (100d, Pre-trained)</span>
+                      <span class="seg-sub">Wiki-Gigaword 100d · Pre-trained static embeddings</span>
+                    </div>
+                    <span class="perf-rank low">P@10 0.409</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Distance Metric Selector -->
+              <div class="form-group">
+                <div class="group-header">
+                  <label class="field-label">2. Distance / Similarity Metric</label>
+                  <span class="metric-prop" id="metricProperty">Higher = More Similar</span>
+                </div>
+                <div class="segmented-control horizontal" id="metricSelector">
+                  <button class="segment-btn-h active" data-metric="cosine">
+                    <span class="m-title">Cosine Similarity</span>
+                    <span class="m-formula font-mono">(A·B)/(||A|| ||B||)</span>
+                  </button>
+                  <button class="segment-btn-h" data-metric="euclidean">
+                    <span class="m-title">Euclidean Distance</span>
+                    <span class="m-formula font-mono">sqrt(Σ(Ai - Bi)²)</span>
+                  </button>
+                  <button class="segment-btn-h" data-metric="manhattan">
+                    <span class="m-title">Manhattan Distance</span>
+                    <span class="m-formula font-mono">Σ|Ai - Bi|</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Top-K Slider -->
+              <div class="form-group range-group">
+                <div class="range-header">
+                  <label class="field-label">Retrieve Top-K Items</label>
+                  <span class="range-val font-mono" id="topKVal">K = 5</span>
+                </div>
+                <input type="range" id="topKSlider" min="3" max="10" value="5" step="1">
+              </div>
+
+              <!-- Vector Dimension Visualizer -->
+              <div class="vector-preview-box">
+                <div class="vec-header">
+                  <span class="vec-title">Vector Representation Profile</span>
+                  <span class="vec-density font-mono" id="vectorDensity">Dense (300/300 active)</span>
+                </div>
+                <div class="vector-sparkline" id="vectorSparkline">
+                  <!-- Generated dynamically in JS -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Recommendation Results Column (Right) -->
+          <div class="results-column">
+            
+            <!-- Output Header Banner -->
+            <div class="results-header-card">
+              <div class="results-header-left">
+                <span class="status-indicator live"></span>
+                <div class="res-titles">
+                  <h3 class="res-title">Retrieved Top-K Products</h3>
+                  <p class="res-sub">Nearest neighbors in 10,001 Amazon catalog items via NumPy scratch implementation</p>
+                </div>
+              </div>
+              <div class="results-header-right">
+                <div class="perf-metric">
+                  <span class="perf-label">Query Time</span>
+                  <span class="perf-num font-mono">0.6 ms</span>
+                </div>
+                <div class="perf-metric">
+                  <span class="perf-label">Top-1 Score</span>
+                  <span class="perf-num font-mono text-emerald" id="top1ScoreDisplay">0.925</span>
+                </div>
+                <div class="perf-metric">
+                  <span class="perf-label">Precision@K</span>
+                  <span class="perf-num font-mono text-emerald" id="currentPrecDisplay">1.00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mathematical Note Callout -->
+            <div class="insight-callout" id="mathInsightCallout">
+              <div class="callout-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+              </div>
+              <div class="callout-content">
+                <span class="callout-title" id="insightTitle">Cosine Similarity Behavior</span>
+                <p class="callout-text" id="insightText">
+                  Cosine measures the angular alignment between L2-normalized embedding vectors in 300-dimensional semantic space. 
+                  Unlike raw Euclidean distance, cosine similarity is invariant to document length.
+                </p>
+              </div>
+            </div>
+
+            <!-- Recommendation Items List -->
+            <div class="recommendations-container" id="recommendationsList">
+              <!-- Dynamically populated -->
+            </div>
+
+            <!-- Empty / Error state placeholder -->
+            <div class="empty-state hidden" id="emptyState">
+              <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <h4>No Matching Products</h4>
+              <p>Try searching for a different product keyword or select one of the benchmark test presets above.</p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SECTION 2: TABLE 7 MATRIX ================= -->
+      <section id="pane-table7" class="tab-pane">
+        <div class="panel-card full-width">
+          <div class="card-header-bar">
+            <div>
+              <span class="section-tag">TABLE 7 REPRODUCTION</span>
+              <h2 class="section-heading">12-Configuration Top-1 Scores Matrix</h2>
+              <p class="section-desc">
+                Top-1 similarity or distance scores across 4 vectorization models and 3 distance metrics on 3 benchmark products.
+                <strong>Key Finding:</strong> Raw scores are <em>not comparable across vectorizers</em> (e.g., Word2Vec Manhattan = 94.1 vs TF-IDF Manhattan = 2.15). Quality must be judged by Top-K ranking relevance.
+              </p>
+            </div>
+            <div class="table-legend">
+              <span class="legend-chip"><span class="chip-color cos"></span> Cosine (↑ higher is closer)</span>
+              <span class="legend-chip"><span class="chip-color dist"></span> Distance (↓ lower is closer)</span>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table" id="matrixTable7">
+              <thead>
+                <tr>
+                  <th>Vectorizer Model</th>
+                  <th>Metric</th>
+                  <th>Test 1: Puzzle (Woodstock 500pc)</th>
+                  <th>Test 2: Longboard (DB Crossbow)</th>
+                  <th>Test 3: Costume (Clawdeen Wolf)</th>
+                  <th>Paper Delta (Max |Δ|)</th>
+                  <th>Model Note</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="table-footnote">
+            <svg class="fn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span><strong>Reproducibility Note:</strong> Test 2 (Longboard) achieves perfect 1.000 cosine / 0.000 distance under Count and TF-IDF because the nearest neighbor in the Amazon catalog shares identical core tokens. Word2Vec captures semantic equivalence without exact string repetition.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SECTION 3: TABLE 11 BENCHMARK ================= -->
+      <section id="pane-table11" class="tab-pane">
+        <div class="panel-card full-width">
+          <div class="card-header-bar">
+            <div>
+              <span class="section-tag">TABLE 11: 500-SEED BENCHMARK</span>
+              <h2 class="section-heading">Systematic Ranking Evaluation & Bootstrap 95% Confidence Intervals</h2>
+              <p class="section-desc">
+                Evaluated over 500 stratified seed products with 1,000 bootstrap iterations. 
+                Relevance ground truth = sharing the seed's top-2-level category in the Amazon taxonomy.
+              </p>
+            </div>
+            <div class="benchmark-summary-stats">
+              <div class="mini-kpi">
+                <span class="mini-label">Seeds Sampled</span>
+                <span class="mini-val font-mono">500</span>
+              </div>
+              <div class="mini-kpi">
+                <span class="mini-label">Bootstrap Iterations</span>
+                <span class="mini-val font-mono">1,000</span>
+              </div>
+              <div class="mini-kpi">
+                <span class="mini-label">Cosine vs Euclidean Equiv.</span>
+                <span class="mini-val font-mono">99.6%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Visual Bar Chart Comparison -->
+          <div class="chart-panel">
+            <h4 class="chart-title">Precision@10 Comparison (Mean ± 95% Bootstrap CI)</h4>
+            <div class="bars-container" id="precisionBars">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Benchmark Table -->
+          <div class="table-responsive">
+            <table class="data-table" id="table11Main">
+              <thead>
+                <tr>
+                  <th>Model Configuration</th>
+                  <th>P@10 (Mean)</th>
+                  <th>P@10 95% CI</th>
+                  <th>Recall@10</th>
+                  <th>Recall@10 95% CI</th>
+                  <th>NDCG@10</th>
+                  <th>NDCG@10 95% CI</th>
+                  <th>Paired Δ vs Baseline</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="explanation-grid">
+            <div class="explain-card">
+              <h5>Why is Recall@10 Small by Construction?</h5>
+              <p>Recall@10 measures <code>hits / (all other items in seed subcategory)</code>. In the Amazon catalog, each subcategory contains 300 to 1,200 items. With only 10 retrieval slots, maximum theoretical recall is bounded at ~0.03. Recall is used strictly for relative cross-model comparison.</p>
+            </div>
+            <div class="explain-card">
+              <h5>The Euclidean vs Cosine Identity (99.6%)</h5>
+              <p>When document vectors are L2-normalized to unit norm (||x|| = 1), Euclidean distance and cosine similarity are strictly monotonic: <code>d_E² = 2 - 2·cos(u, v)</code>. In 99.6% of seeds, top-10 sets are identical; the 0.4% discrepancy is due to floating point tie-breaking.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SECTION 4: ABLATION STUDY ================= -->
+      <section id="pane-ablation" class="tab-pane">
+        <div class="panel-card full-width">
+          <div class="card-header-bar">
+            <div>
+              <span class="section-tag">ABLATION & NOVEL IMPROVEMENT</span>
+              <h2 class="section-heading">Isolating Hyperparameters, Pooling, & Metadata Fusion</h2>
+              <p class="section-desc">
+                All Word2Vec models share identical hyperparameters (<code>dim=300, window=5, sg=1, neg=5, epochs=25</code>).
+                A controlled experiment isolates "richer document metadata" from "better embedding vectors".
+              </p>
+            </div>
+          </div>
+
+          <!-- Ablation Table -->
+          <div class="table-responsive">
+            <table class="data-table" id="tableAblation">
+              <thead>
+                <tr>
+                  <th>Ablation Variant</th>
+                  <th>P@10</th>
+                  <th>P@10 95% CI</th>
+                  <th>NDCG@10</th>
+                  <th>Paired Δ vs Default W2V</th>
+                  <th>Statistical Significance</th>
+                  <th>Scientific Takeaway</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Key Findings Bento Grid -->
+          <div class="bento-findings-grid">
+            <div class="bento-card bento-wide">
+              <div class="bento-badge success">KEY BREAKTHROUGH</div>
+              <h4>Metadata Fusion: Product Name + About Product</h4>
+              <p>Concatenating title and product description increases P@10 from <strong>0.538 to 0.586 (+4.8% paired lift, p &lt; 0.001)</strong> and NDCG@10 from 0.558 to 0.603. Description text supplies domain attributes (material, dimensions, age grade) missing in sparse titles.</p>
+            </div>
+            <div class="bento-card">
+              <div class="bento-badge">CONTROL STUDY</div>
+              <h4>Title-Only Control Separates Effects</h4>
+              <p>When Word2Vec is trained on the fused corpus but <em>only the title is pooled at retrieval</em>, P@10 reaches 0.560 (+2.2%). This proves 46% of the fusion gain comes from superior word embeddings, and 54% from richer query representations.</p>
+            </div>
+            <div class="bento-card">
+              <div class="bento-badge warning">POOLING EFFECT</div>
+              <h4>Sum-Pooling vs Mean-Pooling</h4>
+              <p>Mean-pooling drops P@10 by 1.5% under Euclidean distance (0.523 vs 0.538). Sum-pooling preserves word count weight, implicitly encoding document length cues relevant in catalog search.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SECTION 5: NUMPY ALGORITHMIC ARCHITECTURE ================= -->
+      <section id="pane-algorithms" class="tab-pane">
+        <div class="panel-card full-width">
+          <div class="card-header-bar">
+            <div>
+              <span class="section-tag">MATHEMATICAL FORMULATIONS</span>
+              <h2 class="section-heading">From-Scratch NumPy Implementation (Equations 1–8)</h2>
+              <p class="section-desc">
+                Faithful reproduction of Oprea et al. Vectorizer and similarity metrics built without high-level library shortcuts.
+              </p>
+            </div>
+          </div>
+
+          <div class="algo-cards-grid">
+            <!-- Eq 1 Cosine -->
+            <div class="algo-card">
+              <div class="algo-header">
+                <span class="eq-tag font-mono">Paper Eq. 1</span>
+                <h4>Cosine Similarity</h4>
+              </div>
+              <div class="formula-box font-mono">
+                sim(A, B) = (A · Bᵀ) / (||A||₂ · ||B||₂)
+              </div>
+              <p class="algo-text">
+                Implemented using vectorized matrix multiplication <code>dot = A @ B.T</code> and broadcasting row norms. Numerical guard <code>max(na * nb, 1e-10)</code> prevents division by zero for sparse all-zero vectors.
+              </p>
+              <div class="code-snippet font-mono">
+                <span class="c-kw">def</span> <span class="c-fn">cosine_sim_scratch</span>(A, B):<br>
+                &nbsp;&nbsp;dot = A @ B.T<br>
+                &nbsp;&nbsp;na = np.linalg.norm(A, axis=1, keepdims=<span class="c-kw">True</span>)<br>
+                &nbsp;&nbsp;nb = np.linalg.norm(B, axis=1, keepdims=<span class="c-kw">True</span>).T<br>
+                &nbsp;&nbsp;<span class="c-kw">return</span> dot / np.maximum(na * nb, 1e-10)
+              </div>
+            </div>
+
+            <!-- Eq 2 Manhattan -->
+            <div class="algo-card">
+              <div class="algo-header">
+                <span class="eq-tag font-mono">Paper Eq. 2</span>
+                <h4>Manhattan Distance (L1)</h4>
+              </div>
+              <div class="formula-box font-mono">
+                d_M(A, B) = Σ |A_i - B_i|
+              </div>
+              <p class="algo-text">
+                Sum of absolute coordinate differences. Sensitive to vector dimensionality and unnormalized embedding scale, explaining large values for 300d embeddings.
+              </p>
+              <div class="code-snippet font-mono">
+                <span class="c-kw">def</span> <span class="c-fn">manhattan_dist_scratch</span>(A, B):<br>
+                &nbsp;&nbsp;out = np.zeros((A.shape[0], B.shape[0]), dtype=np.float32)<br>
+                &nbsp;&nbsp;<span class="c-kw">for</span> i, row <span class="c-kw">in</span> enumerate(A):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;out[i] = np.abs(B - row).sum(axis=1)<br>
+                &nbsp;&nbsp;<span class="c-kw">return</span> out
+              </div>
+            </div>
+
+            <!-- Eq 3 Euclidean -->
+            <div class="algo-card">
+              <div class="algo-header">
+                <span class="eq-tag font-mono">Paper Eq. 3</span>
+                <h4>Euclidean Distance (L2)</h4>
+              </div>
+              <div class="formula-box font-mono">
+                d_E(A, B) = sqrt(||A||² + ||B||² - 2(A · Bᵀ))
+              </div>
+              <p class="algo-text">
+                Computed via identity expansion to avoid allocating O(N·M·D) intermediate tensors, running 40x faster than naive difference arrays.
+              </p>
+              <div class="code-snippet font-mono">
+                <span class="c-kw">def</span> <span class="c-fn">euclidean_dist_scratch</span>(A, B):<br>
+                &nbsp;&nbsp;a_sq = (A ** 2).sum(axis=1, keepdims=<span class="c-kw">True</span>)<br>
+                &nbsp;&nbsp;b_sq = (B ** 2).sum(axis=1, keepdims=<span class="c-kw">True</span>).T<br>
+                &nbsp;&nbsp;<span class="c-kw">return</span> np.sqrt(np.maximum(a_sq + b_sq - 2.0 * (A @ B.T), 0.0))
+              </div>
+            </div>
+
+            <!-- Eq 6-8 TF-IDF -->
+            <div class="algo-card">
+              <div class="algo-header">
+                <span class="eq-tag font-mono">Paper Eq. 6–8</span>
+                <h4>Scratch TF-IDF Vectorizer</h4>
+              </div>
+              <div class="formula-box font-mono">
+                TF(t, d) = f(t, d)/|d|, IDF(t) = log(N / df(t))
+              </div>
+              <p class="algo-text">
+                Vocabulary is injected directly from CountVectorizer to guarantee identical vocabulary space, eliminating vocabulary mismatch confounds. Rows are strictly L2-normalized.
+              </p>
+              <div class="code-snippet font-mono">
+                <span class="c-kw">class</span> <span class="c-fn">ScratchTFIDF</span>:<br>
+                &nbsp;&nbsp;tf[i, j] = c / len(toks)<br>
+                &nbsp;&nbsp;idf = np.log(N / np.maximum(dfc, 1.0))<br>
+                &nbsp;&nbsp;X = tf * idf<br>
+                &nbsp;&nbsp;<span class="c-kw">return</span> X / np.maximum(np.linalg.norm(X, axis=1, keepdims=<span class="c-kw">True</span>), 1e-10)
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-inner">
+        <div class="footer-left">
+          <span>RS Group 5 Case Study · Partial reproduction of Oprea et al. (IEEE Access, 2026)</span>
+        </div>
+        <div class="footer-right font-mono">
+          <span>SEED=42 · workers=1 · Deterministic CPU Execution · NumPy</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
